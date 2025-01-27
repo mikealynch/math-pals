@@ -41,7 +41,6 @@ def clear_database():
     conn.close()
 
 # Generate a random subtraction question
-# Ensure no duplicates in the same session
 def generate_question(previous_questions):
     while True:
         num1 = random.randint(1, 12)
@@ -59,7 +58,7 @@ init_db()
 # Streamlit app
 st.title("Math Practice: Subtraction Table")
 
-# Session state to track progress if not initialized
+# Initialize session state variables
 if "correct_count" not in st.session_state:
     st.session_state.correct_count = 0
 if "question" not in st.session_state:
@@ -67,61 +66,53 @@ if "question" not in st.session_state:
     st.session_state.question = generate_question(st.session_state.previous_questions)
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
+if "show_next" not in st.session_state:
+    st.session_state.show_next = False
 
+# Display the question and form
+num1, num2 = st.session_state.question
+if not st.session_state.show_next:
+    with st.form("answer_form"):
+        st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
+        user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
+        submit_button = st.form_submit_button("Submit")
+        
+        if submit_button:
+            correct_answer = num1 - num2
+            is_correct = user_answer == correct_answer
 
+            # Provide feedback
+            if is_correct:
+                st.session_state.feedback = "Correct! Well done!"
+                st.session_state.correct_count += 1
+            else:
+                st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
 
-# Input form for the answer
-with st.form("answer_form"):
-    num1, num2 = st.session_state.question
-    st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
-    correct_answer = num1 - num2  # Calculate the correct answer
-    
+            # Save to database
+            insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
+            st.session_state.show_next = True  # Show the next question button
 
-    user_answer = st.number_input(
-        "Your Answer:", step=1, format="%d", key="user_answer",
-        label_visibility="visible", help="Enter your answer here."
-    )
-    submit_button = st.form_submit_button("Submit")
-
-# Process the answer
-if submit_button:
-    # Check correctness of the answer
-    num1, num2 = st.session_state.question
-    correct_answer = num1 - num2
-    is_correct = user_answer == correct_answer
-
-    # Provide feedback and update the database
-    if is_correct:
-        st.session_state.feedback = "Correct! Well done!"
-        st.session_state.correct_count += 1
-    else:
-        st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
-
-    # Update the database
-    insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
-
-    # Generate a new question
-    st.session_state.question = generate_question(st.session_state.previous_questions)
-
-# Dynamically display feedback
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
-# Display the next question
-num1, num2 = st.session_state.question
-st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
+# Show the "Next Question" button
+if st.session_state.show_next:
+    if st.button("Next Question"):
+        st.session_state.question = generate_question(st.session_state.previous_questions)
+        st.session_state.feedback = ""
+        st.session_state.show_next = False
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
 
-# Optionally show previous attempts
+# Show previous attempts
 if st.checkbox("Show Previous Attempts"):
     conn = sqlite3.connect("subtraction_practice.db")
     df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
     st.dataframe(df)
     conn.close()
 
-# Button to clear the SQL database
+# Clear database button
 if st.button("Clear Database"):
     clear_database()
     st.warning("Database cleared!")
