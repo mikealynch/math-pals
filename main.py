@@ -42,8 +42,8 @@ def clear_database():
 # Generate a random subtraction question
 def generate_question(previous_questions):
     while True:
-        num1 = random.randint(1, 12)
-        num2 = random.randint(1, 12)
+        num1 = random.randint(9, 18)
+        num2 = random.randint(5, 12)
         if num1 < num2:  # Ensure no negative results
             num1, num2 = num2, num1
         question = (num1, num2)
@@ -109,7 +109,7 @@ if st.session_state.celebration:
     st.image(
         "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
         caption="Great job!",
-        use_column_width=True
+        use_container_width=True
     )
 
 # Show "Next Question" button
