@@ -79,7 +79,7 @@ if not st.session_state.show_next:
     with st.form("answer_form", clear_on_submit=True):
         st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
         user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
-        submit_button = st.form_submit_button("Submit", key="submit_button")
+        submit_button = st.form_submit_button("Submit", key="submit_button")  # Submit button here
 
         if submit_button:
             correct_answer = num1 - num2
