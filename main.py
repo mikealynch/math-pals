@@ -68,13 +68,14 @@ if "question" not in st.session_state:
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
 
-num1, num2 = st.session_state.question
-st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
+
 
 # Input form for the answer
 with st.form("answer_form"):
+    num1, num2 = st.session_state.question
+    st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
     correct_answer = num1 - num2  # Calculate the correct answer
-
+    
 
     user_answer = st.number_input(
         "Your Answer:", step=1, format="%d", key="user_answer",
