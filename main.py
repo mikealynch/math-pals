@@ -115,7 +115,7 @@ if st.session_state.feedback:
 
 # Show celebration if available
 if st.session_state.celebration:
-    st.session_state.feedback
+    st.markdown(st.session_state.celebration)
 
 # Show "Next Question" button
 if st.session_state.show_next:
@@ -123,6 +123,7 @@ if st.session_state.show_next:
         # Generate a new question, reset the flow, and clear the user input
         st.session_state.question = generate_question(st.session_state.previous_questions)
         st.session_state.feedback = ""
+        st.session_state.celebration = ""
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
         st.rerun()  # Force the app to rerun
