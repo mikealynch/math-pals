@@ -67,6 +67,8 @@ if "feedback" not in st.session_state:
     st.session_state.feedback = ""
 if "celebration" not in st.session_state:
     st.session_state.celebration = False  # Boolean flag to control image display
+if "disappointment" not in st.session_state:
+    st.session_state.disappointment = False  # Boolean flag to control image display
 if "show_next" not in st.session_state:
     st.session_state.show_next = False
 if "user_answer" not in st.session_state:
@@ -91,9 +93,11 @@ if not st.session_state.show_next:
                 st.session_state.feedback = "Correct! Well done!"
                 st.session_state.correct_count += 1
                 st.session_state.celebration = True  # Enable image display for correct answers
+                st.session_state.disappointment = False
             else:
                 st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
                 st.session_state.celebration = False  # Disable image for incorrect answers
+                st.session_state.disappointment = True
 
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
@@ -111,6 +115,14 @@ if st.session_state.celebration:
         caption="Great job!",
         use_container_width=True
     )
+    
+# Show disappointment image if the user answered incorrectly
+if st.session_state.celebration:
+    st.image(
+        "ttps://github.com/mikealynch/math-pals/blob/main/dis_pika.jpg",
+        caption="NOPE!",
+        use_container_width=True
+    )
 
 # Show "Next Question" button
 if st.session_state.show_next:
@@ -119,6 +131,7 @@ if st.session_state.show_next:
         st.session_state.question = generate_question(st.session_state.previous_questions)
         st.session_state.feedback = ""
         st.session_state.celebration = False
+        st.session_state.disappointment = False
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
         st.rerun()  # Force the app to rerun
@@ -127,6 +140,6 @@ if st.session_state.show_next:
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
 
 # Clear database button
-if st.button("Clear Database"):
-    clear_database()
-    st.warning("Database cleared!")
+#if st.button("Clear Database"):
+    #clear_database()
+    #st.warning("Database cleared!")
