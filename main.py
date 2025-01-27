@@ -1,5 +1,6 @@
 import streamlit as st
 import sqlite3
+import pandas as pd
 import random
 from datetime import datetime
 
@@ -31,6 +32,14 @@ def insert_record(question, user_answer, correct_answer, is_correct):
     conn.commit()
     conn.close()
 
+# Clear all records from the database
+def clear_database():
+    conn = sqlite3.connect("subtraction_practice.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM subtraction_practice")
+    conn.commit()
+    conn.close()
+
 # Generate a random subtraction question
 def generate_question():
     num1 = random.randint(1, 12)
@@ -50,10 +59,16 @@ if "correct_count" not in st.session_state:
     st.session_state.correct_count = 0
 if "question" not in st.session_state:
     st.session_state.question = generate_question()
+if "feedback" not in st.session_state:
+    st.session_state.feedback = ""
 
 # Display the question
 num1, num2 = st.session_state.question
 st.write(f"What is {num1} - {num2}?")
+
+# Display feedback if available
+if st.session_state.feedback:
+    st.write(st.session_state.feedback)
 
 # Input form for the answer
 with st.form("answer_form"):
@@ -70,21 +85,22 @@ if submit_button:
 
     # Provide feedback to the user
     if is_correct:
-        st.success("Correct! Well done!")
+        st.session_state.feedback = "Correct! Well done!"
         st.session_state.correct_count += 1
     else:
-        st.error(f"Incorrect. The correct answer is {correct_answer}.")
+        st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
 
     # Check if target is reached
     if st.session_state.correct_count >= 28:
         st.balloons()
-        st.write("Congratulations! You answered 28 questions correctly!")
+        st.session_state.feedback = "Congratulations! You answered 28 questions correctly!"
         st.session_state.correct_count = 0  # Reset for the next session
-    else:
-        st.write(f"Correct answers: {st.session_state.correct_count}/28")
 
     # Generate a new question
     st.session_state.question = generate_question()
+
+# Display progress
+st.write(f"Correct answers: {st.session_state.correct_count}/28")
 
 # Optionally show previous attempts
 if st.checkbox("Show Previous Attempts"):
@@ -92,3 +108,16 @@ if st.checkbox("Show Previous Attempts"):
     df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
     st.dataframe(df)
     conn.close()
+
+# Debug button to display entire SQL database
+if st.button("Debug: Show SQL Database"):
+    conn = sqlite3.connect("subtraction_practice.db")
+    df = pd.read_sql_query("SELECT * FROM subtraction_practice", conn)
+    st.write("### Full Database Contents")
+    st.dataframe(df)
+    conn.close()
+
+# Button to clear the SQL database
+if st.button("Clear Database"):
+    clear_database()
+    st.warning("Database cleared!")
