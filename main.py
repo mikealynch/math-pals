@@ -119,7 +119,7 @@ if st.session_state.celebration:
 # Show disappointment image if the user answered incorrectly
 if st.session_state.celebration:
     st.image(
-        "ttps://github.com/mikealynch/math-pals/blob/main/dis_pika.jpg",
+        "https://github.com/mikealynch/math-pals/blob/main/dis_pika.jpg",
         caption="NOPE!",
         use_container_width=True
     )
