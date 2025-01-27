@@ -108,6 +108,8 @@ if st.session_state.show_next:
         st.session_state.feedback = ""
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
+        st.rerun()  # Force the app to rerun
+
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
