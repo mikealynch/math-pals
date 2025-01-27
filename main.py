@@ -78,7 +78,7 @@ if not st.session_state.show_next:
     # Input form for the answer
     with st.form("answer_form", clear_on_submit=True):
         
-        st.rerun() 
+        
         st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
         user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
         submit_button = st.form_submit_button("Submit")
@@ -97,6 +97,7 @@ if not st.session_state.show_next:
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
             st.session_state.show_next = True  # Toggle to show the next question button
+            st.rerun()
 # Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
