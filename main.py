@@ -91,7 +91,12 @@ if not st.session_state.show_next:
             if is_correct:
                 st.session_state.feedback = "Correct! Well done!"
                 st.session_state.correct_count += 1
-                
+                st.image(
+                    "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
+                    caption="Great job!",
+                    use_column_width=True,
+                )
+                                
             else:
                 st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
             # Save to database
@@ -117,11 +122,11 @@ if st.session_state.show_next:
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
 
 # Show previous attempts
-if st.checkbox("Show Previous Attempts"):
-    conn = sqlite3.connect("subtraction_practice.db")
-    df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
-    st.dataframe(df)
-    conn.close()
+# if st.checkbox("Show Previous Attempts"):
+    #conn = sqlite3.connect("subtraction_practice.db")
+    #df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
+    #st.dataframe(df)
+    #conn.close()
 
 # Clear database button
 if st.button("Clear Database"):
@@ -129,5 +134,5 @@ if st.button("Clear Database"):
     st.warning("Database cleared!")
 
 # Debug session state
-if st.checkbox("Debug: Show Session State"):
-    st.write(st.session_state)
+#if st.checkbox("Debug: Show Session State"):
+    #st.write(st.session_state)
