@@ -78,7 +78,7 @@ if st.session_state.feedback:
 
 # Input form for the answer
 with st.form("answer_form"):
-    user_answer = st.number_input("Your Answer:", step=1, format="%d", key="answer_input")
+    user_answer = st.number_input("Your Answer:", step=1, format="%d")
     submit_button = st.form_submit_button("Submit")
 
 # Process the answer
@@ -105,9 +105,6 @@ if submit_button:
 
     # Generate a new question
     st.session_state.question = generate_question(st.session_state.previous_questions)
-
-    # Clear the answer input field
-    st.session_state["answer_input"] = ""
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
