@@ -77,46 +77,34 @@ st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
 # Debugging tool: Display the correct answer below the question
 st.markdown(f"<h4>Expected Answer: {correct_answer}</h4>", unsafe_allow_html=True)
 
-# Display feedback if available
-if st.session_state.feedback:
-    st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
+# Display feedback dynamically
+st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
 # Input form for the answer
 with st.form("answer_form"):
     user_answer = st.number_input(
-        "Your Answer:", step=1, format="%d", key=f"answer_input_{num1}_{num2}",
+        "Your Answer:", step=1, format="%d", key="user_answer",
         label_visibility="visible", help="Enter your answer here."
-    )
-    st.markdown(
-        "<style>input[type=number] { font-size: 1.5em !important; }</style>",
-        unsafe_allow_html=True
     )
     submit_button = st.form_submit_button("Submit")
 
 # Process the answer
 if submit_button:
-    try:
-        # Check correctness of the answer
-        is_correct = user_answer == correct_answer
+    # Check correctness of the answer
+    is_correct = user_answer == correct_answer
 
-        # Provide feedback and update the database
-        if is_correct:
-            st.session_state.feedback = "Correct! Well done!"
-            st.session_state.correct_count += 1
-        else:
-            st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
+    # Provide feedback and update the database
+    if is_correct:
+        st.session_state.feedback = "Correct! Well done!"
+        st.session_state.correct_count += 1
+    else:
+        st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
 
-        # Update the database
-        insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
+    # Update the database
+    insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
 
-        # Generate a new question
-        st.session_state.question = generate_question(st.session_state.previous_questions)
-
-        # Re-render the app
-        st.experimental_rerun()
-
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+    # Generate a new question
+    st.session_state.question = generate_question(st.session_state.previous_questions)
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
@@ -125,14 +113,6 @@ st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", un
 if st.checkbox("Show Previous Attempts"):
     conn = sqlite3.connect("subtraction_practice.db")
     df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
-    st.dataframe(df)
-    conn.close()
-
-# Debug button to display entire SQL database
-if st.button("Debug: Show SQL Database"):
-    conn = sqlite3.connect("subtraction_practice.db")
-    df = pd.read_sql_query("SELECT * FROM subtraction_practice", conn)
-    st.write("### Full Database Contents")
     st.dataframe(df)
     conn.close()
 
