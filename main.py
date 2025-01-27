@@ -41,12 +41,17 @@ def clear_database():
     conn.close()
 
 # Generate a random subtraction question
-def generate_question():
-    num1 = random.randint(1, 12)
-    num2 = random.randint(1, 12)
-    if num1 < num2:  # Ensure no negative results
-        num1, num2 = num2, num1
-    return num1, num2
+# Ensure no duplicates in the same session
+def generate_question(previous_questions):
+    while True:
+        num1 = random.randint(1, 12)
+        num2 = random.randint(1, 12)
+        if num1 < num2:  # Ensure no negative results
+            num1, num2 = num2, num1
+        question = (num1, num2)
+        if question not in previous_questions:
+            previous_questions.add(question)
+            return question
 
 # Initialize the database
 init_db()
@@ -58,7 +63,8 @@ st.title("Math Practice: Subtraction Table")
 if "correct_count" not in st.session_state:
     st.session_state.correct_count = 0
 if "question" not in st.session_state:
-    st.session_state.question = generate_question()
+    st.session_state.previous_questions = set()
+    st.session_state.question = generate_question(st.session_state.previous_questions)
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
 
@@ -95,9 +101,10 @@ if submit_button:
         st.balloons()
         st.session_state.feedback = "Congratulations! You answered 28 questions correctly!"
         st.session_state.correct_count = 0  # Reset for the next session
+        st.session_state.previous_questions.clear()  # Reset questions to avoid duplicates
 
     # Generate a new question
-    st.session_state.question = generate_question()
+    st.session_state.question = generate_question(st.session_state.previous_questions)
 
 # Display progress
 st.write(f"Correct answers: {st.session_state.correct_count}/28")
