@@ -95,24 +95,28 @@ with st.form("answer_form"):
 
 # Process the answer
 if submit_button:
-    # Check correctness of the answer
-    is_correct = user_answer == correct_answer
+    try:
+        # Check correctness of the answer
+        is_correct = user_answer == correct_answer
 
-    # Provide feedback and update the database
-    if is_correct:
-        st.session_state.feedback = "Correct! Well done!"
-        st.session_state.correct_count += 1
-    else:
-        st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
+        # Provide feedback and update the database
+        if is_correct:
+            st.session_state.feedback = "Correct! Well done!"
+            st.session_state.correct_count += 1
+        else:
+            st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
 
-    # Update the database
-    insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
+        # Update the database
+        insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
 
-    # Generate a new question and update immediately
-    st.session_state.question = generate_question(st.session_state.previous_questions)
+        # Generate a new question
+        st.session_state.question = generate_question(st.session_state.previous_questions)
 
-    # Refresh the UI after state updates
-    st.experimental_rerun()
+        # Re-render the app
+        st.experimental_rerun()
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
