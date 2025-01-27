@@ -68,14 +68,14 @@ if "question" not in st.session_state:
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
 
-# Display the question
 num1, num2 = st.session_state.question
-correct_answer = num1 - num2  # Calculate the correct answer
-
 st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
 
 # Input form for the answer
 with st.form("answer_form"):
+    correct_answer = num1 - num2  # Calculate the correct answer
+
+
     user_answer = st.number_input(
         "Your Answer:", step=1, format="%d", key="user_answer",
         label_visibility="visible", help="Enter your answer here."
@@ -85,6 +85,8 @@ with st.form("answer_form"):
 # Process the answer
 if submit_button:
     # Check correctness of the answer
+    num1, num2 = st.session_state.question
+    correct_answer = num1 - num2
     is_correct = user_answer == correct_answer
 
     # Provide feedback and update the database
@@ -103,6 +105,10 @@ if submit_button:
 # Dynamically display feedback
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
+
+# Display the next question
+num1, num2 = st.session_state.question
+st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
