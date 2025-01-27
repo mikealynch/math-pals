@@ -98,7 +98,7 @@ if not st.session_state.show_next:
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
             st.session_state.show_next = True  # Toggle to show the next question button
-            st.experimental_rerun()  # Force UI refresh
+            st.rerun()  # Force UI refresh
 
 # Show feedback if available
 if st.session_state.feedback:
@@ -121,7 +121,7 @@ if st.session_state.show_next:
         st.session_state.celebration = False
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
-        st.experimental_rerun()  # Force the app to rerun
+        st.rerun()  # Force the app to rerun
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
