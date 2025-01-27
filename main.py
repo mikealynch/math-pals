@@ -95,27 +95,24 @@ with st.form("answer_form"):
 
 # Process the answer
 if submit_button:
+    # Check correctness of the answer
     is_correct = user_answer == correct_answer
 
-    # Update the database
-    insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
-
-    # Provide feedback to the user
+    # Provide feedback and update the database
     if is_correct:
         st.session_state.feedback = "Correct! Well done!"
         st.session_state.correct_count += 1
     else:
         st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
 
-    # Check if target is reached
-    if st.session_state.correct_count >= 28:
-        st.balloons()
-        st.session_state.feedback = "Congratulations! You answered 28 questions correctly!"
-        st.session_state.correct_count = 0  # Reset for the next session
-        st.session_state.previous_questions.clear()  # Reset questions to avoid duplicates
+    # Update the database
+    insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
 
-    # Generate a new question
+    # Generate a new question and update immediately
     st.session_state.question = generate_question(st.session_state.previous_questions)
+
+    # Refresh the UI after state updates
+    st.experimental_rerun()
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
@@ -139,3 +136,7 @@ if st.button("Debug: Show SQL Database"):
 if st.button("Clear Database"):
     clear_database()
     st.warning("Database cleared!")
+
+# Debug session state
+if st.checkbox("Debug: Show Session State"):
+    st.write(st.session_state)
