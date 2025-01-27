@@ -66,6 +66,8 @@ if "question" not in st.session_state:
     st.session_state.question = generate_question(st.session_state.previous_questions)
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
+if "image" not in st.session_state:
+    st.session_state.image = ""    
 if "show_next" not in st.session_state:
     st.session_state.show_next = False
 if "user_answer" not in st.session_state:
@@ -91,7 +93,7 @@ if not st.session_state.show_next:
             if is_correct:
                 st.session_state.feedback = "Correct! Well done!"
                 st.session_state.correct_count += 1
-                st.image(
+                st.session_state.image(
                     "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
                     caption="Great job!",
                     use_column_width=True,
