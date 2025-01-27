@@ -72,18 +72,28 @@ if "feedback" not in st.session_state:
 num1, num2 = st.session_state.question
 st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
 
+# Debugging tool: Display the correct answer below the question
+correct_answer = num1 - num2
+st.markdown(f"<h4>Expected Answer: {correct_answer}</h4>", unsafe_allow_html=True)
+
 # Display feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
 # Input form for the answer
 with st.form("answer_form"):
-    user_answer = st.number_input("Your Answer:", step=1, format="%d")
+    user_answer = st.number_input(
+        "Your Answer:", step=1, format="%d", key="answer_input", label_visibility="visible",
+        help="Enter your answer here."
+    )
+    st.markdown(
+        "<style>input[type=number] { font-size: 1.5em !important; }</style>",
+        unsafe_allow_html=True
+    )
     submit_button = st.form_submit_button("Submit")
 
 # Process the answer
 if submit_button:
-    correct_answer = num1 - num2
     is_correct = user_answer == correct_answer
 
     # Update the database
