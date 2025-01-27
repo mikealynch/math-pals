@@ -74,12 +74,12 @@ if "user_answer" not in st.session_state:
 # Display the question
 num1, num2 = st.session_state.question
 
+# If "Next Question" state is not active
 if not st.session_state.show_next:
-    # Input form for the answer
     with st.form("answer_form", clear_on_submit=True):
         st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
         user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
-        submit_button = st.form_submit_button("Submit")
+        submit_button = st.form_submit_button("Submit", key="submit_button")
 
         if submit_button:
             correct_answer = num1 - num2
@@ -94,36 +94,37 @@ if not st.session_state.show_next:
 
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
-            st.session_state.show_next = True  # Toggle to show the next question button
+            st.session_state.show_next = True  # Toggle to "Next Question" state
 
 # Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
-# Show "Next Question" button
+# If "Next Question" state is active, show the button
 if st.session_state.show_next:
-    if st.button("Next Question"):
-        # Generate a new question, reset the flow, and clear the user input
+    if st.button("Next Question", key="next_question_button"):
+        # Generate a new question and reset state
         st.session_state.question = generate_question(st.session_state.previous_questions)
         st.session_state.feedback = ""
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
+        st.experimental_rerun()  # Force the app to rerun
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
 
 # Show previous attempts
-if st.checkbox("Show Previous Attempts"):
+if st.checkbox("Show Previous Attempts", key="show_attempts_checkbox"):
     conn = sqlite3.connect("subtraction_practice.db")
     df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
     st.dataframe(df)
     conn.close()
 
 # Clear database button
-if st.button("Clear Database"):
+if st.button("Clear Database", key="clear_database_button"):
     clear_database()
     st.warning("Database cleared!")
 
 # Debug session state
-if st.checkbox("Debug: Show Session State"):
+if st.checkbox("Debug: Show Session State", key="debug_checkbox"):
     st.write(st.session_state)
