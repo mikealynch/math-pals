@@ -74,12 +74,6 @@ correct_answer = num1 - num2  # Calculate the correct answer
 
 st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
 
-# Debugging tool: Display the correct answer below the question
-st.markdown(f"<h4>Expected Answer: {correct_answer}</h4>", unsafe_allow_html=True)
-
-# Display feedback dynamically
-st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
-
 # Input form for the answer
 with st.form("answer_form"):
     user_answer = st.number_input(
@@ -105,6 +99,10 @@ if submit_button:
 
     # Generate a new question
     st.session_state.question = generate_question(st.session_state.previous_questions)
+
+# Dynamically display feedback
+if st.session_state.feedback:
+    st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
