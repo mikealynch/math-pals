@@ -1,6 +1,5 @@
 import streamlit as st
 import sqlite3
-import pandas as pd
 import random
 from datetime import datetime
 
@@ -65,9 +64,9 @@ if "question" not in st.session_state:
     st.session_state.previous_questions = set()
     st.session_state.question = generate_question(st.session_state.previous_questions)
 if "feedback" not in st.session_state:
-    st.session_state.feedback = "" 
+    st.session_state.feedback = ""
 if "celebration" not in st.session_state:
-    st.session_state.celebration = "" 
+    st.session_state.celebration = False  # Boolean flag to control image display
 if "show_next" not in st.session_state:
     st.session_state.show_next = False
 if "user_answer" not in st.session_state:
@@ -79,8 +78,6 @@ num1, num2 = st.session_state.question
 if not st.session_state.show_next:
     # Input form for the answer
     with st.form("answer_form", clear_on_submit=True):
-        
-        
         st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
         user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
         submit_button = st.form_submit_button("Submit")
@@ -93,29 +90,27 @@ if not st.session_state.show_next:
             if is_correct:
                 st.session_state.feedback = "Correct! Well done!"
                 st.session_state.correct_count += 1
-                # Display the image for a correct answer
-                st.session_state.celebration = st.image(
-                    "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
-                    caption="Great job!",
-                    use_column_width=True
-                )
-                
-                                
+                st.session_state.celebration = True  # Enable image display for correct answers
             else:
                 st.session_state.feedback = f"Incorrect. The correct answer is {correct_answer}."
+                st.session_state.celebration = False  # Disable image for incorrect answers
+
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
             st.session_state.show_next = True  # Toggle to show the next question button
-            st.rerun()
-            
-            
+            st.experimental_rerun()  # Force UI refresh
+
 # Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
-# Show celebration if available
+# Show celebration image if the user answered correctly
 if st.session_state.celebration:
-    st.markdown(st.session_state.celebration)
+    st.image(
+        "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
+        caption="Great job!",
+        use_column_width=True
+    )
 
 # Show "Next Question" button
 if st.session_state.show_next:
@@ -123,27 +118,15 @@ if st.session_state.show_next:
         # Generate a new question, reset the flow, and clear the user input
         st.session_state.question = generate_question(st.session_state.previous_questions)
         st.session_state.feedback = ""
-        st.session_state.celebration = ""
+        st.session_state.celebration = False
         st.session_state.show_next = False
         st.session_state.user_answer = None  # Reset user answer
-        st.rerun()  # Force the app to rerun
-
+        st.experimental_rerun()  # Force the app to rerun
 
 # Display progress
 st.markdown(f"<h3>Correct answers: {st.session_state.correct_count}/28</h3>", unsafe_allow_html=True)
-
-# Show previous attempts
-# if st.checkbox("Show Previous Attempts"):
-    #conn = sqlite3.connect("subtraction_practice.db")
-    #df = pd.read_sql_query("SELECT * FROM subtraction_practice ORDER BY date DESC", conn)
-    #st.dataframe(df)
-    #conn.close()
 
 # Clear database button
 if st.button("Clear Database"):
     clear_database()
     st.warning("Database cleared!")
-
-# Debug session state
-#if st.checkbox("Debug: Show Session State"):
-    #st.write(st.session_state)
