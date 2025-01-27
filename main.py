@@ -69,14 +69,15 @@ if "feedback" not in st.session_state:
 if "show_next" not in st.session_state:
     st.session_state.show_next = False
 
-# Display the question and form
+# Display the question
 num1, num2 = st.session_state.question
 if not st.session_state.show_next:
+    # Input form for the answer
     with st.form("answer_form"):
         st.markdown(f"<h2>What is {num1} - {num2}?</h2>", unsafe_allow_html=True)
         user_answer = st.number_input("Your Answer:", step=1, format="%d", key="user_answer")
         submit_button = st.form_submit_button("Submit")
-        
+
         if submit_button:
             correct_answer = num1 - num2
             is_correct = user_answer == correct_answer
@@ -90,14 +91,16 @@ if not st.session_state.show_next:
 
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
-            st.session_state.show_next = True  # Show the next question button
+            st.session_state.show_next = True  # Toggle to show the next question button
 
+# Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
 
-# Show the "Next Question" button
+# Show "Next Question" button
 if st.session_state.show_next:
     if st.button("Next Question"):
+        # Generate a new question and reset the flow
         st.session_state.question = generate_question(st.session_state.previous_questions)
         st.session_state.feedback = ""
         st.session_state.show_next = False
