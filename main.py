@@ -95,7 +95,7 @@ if not st.session_state.show_next:
             # Save to database
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
             st.session_state.show_next = True  # Toggle to show the next question button
-            st.rerun()
+        st.rerun()
 # Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
