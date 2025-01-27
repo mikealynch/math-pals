@@ -65,9 +65,7 @@ if "question" not in st.session_state:
     st.session_state.previous_questions = set()
     st.session_state.question = generate_question(st.session_state.previous_questions)
 if "feedback" not in st.session_state:
-    st.session_state.feedback = ""
-if "image" not in st.session_state:
-    st.session_state.image = ""    
+    st.session_state.feedback = "" 
 if "show_next" not in st.session_state:
     st.session_state.show_next = False
 if "user_answer" not in st.session_state:
@@ -93,10 +91,11 @@ if not st.session_state.show_next:
             if is_correct:
                 st.session_state.feedback = "Correct! Well done!"
                 st.session_state.correct_count += 1
-                st.session_state.image(
+                # Display the image for a correct answer
+                st.image(
                     "https://github.com/mikealynch/math-pals/raw/main/squishmallows.gif",
                     caption="Great job!",
-                    use_column_width=True,
+                    use_column_width=True
                 )
                                 
             else:
@@ -105,6 +104,8 @@ if not st.session_state.show_next:
             insert_record(f"{num1} - {num2}", user_answer, correct_answer, is_correct)
             st.session_state.show_next = True  # Toggle to show the next question button
             st.rerun()
+            
+            
 # Show feedback if available
 if st.session_state.feedback:
     st.markdown(f"<h3>{st.session_state.feedback}</h3>", unsafe_allow_html=True)
